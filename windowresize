@@ -1,0 +1,19 @@
+#!/bin/sh
+# This Script resizes the currently selected window with provided unit and centers it
+# Designed to help with floating windows in tiled window managers.
+# Only works on floating windows if you're using DWM.
+# Author : Emad Pourhassani emad@emadp.xyz
+
+# You can get Display resulotion with xrandr |grep \* |awk '{print $1}'
+drx=1920 # Display resolution x
+dry=1080 # Display resolution y
+units=$2
+windowWidth=$(xdotool getactivewindow getwindowgeometry | grep -E -o '[0-9][^ ]+x' | tr "x" " ")
+windowHeight=$(xdotool getactivewindow getwindowgeometry | grep -E -o 'x+[0-9][^ ]+' | tr "x" " ")
+
+   case $1 in 
+     i|increasexy)wmctrl -r ":ACTIVE:" -e "0,$drx,$dry,$(( windowWidth + units )),$(( windowHeight + units ))";;
+     d|decreasexy)wmctrl -r ":ACTIVE:" -e "0,$drx,$dry,$(( windowWidth - units )),$(( windowHeight - units ))";;
+     ix|increasex)wmctrl -r ":ACTIVE:" -e "0,$drx,$dry,$(( windowWidth + units )),$windowHeight";;
+     dx|decreasex)wmctrl -r ":ACTIVE:" -e "0,$drx,$dry,$(( windowWidth - units )),$windowHeight";;
+   esac
