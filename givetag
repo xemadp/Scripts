@@ -7,13 +7,13 @@
 
 addtag()
 {
-        filepath=$(readlink -f $2) # get filepath
+        filepath=$(readlink -f "$2") # get filepath
         if grep -Fwq "$filepath" tags.txt; # check if file already has any tags
         then
                 # Check if file already has the tag.
                 if ( grep "$filepath" tags.txt | sed "s/.*://" | grep -Fwq "$1" ) 
                 then
-                        printf "FILE ALREADY HAS THE $1 TAG\n"
+                        printf "FILE ALREADY HAS THE %s TAG\n" "$1"
                 else
                         # If file is missing the tag, add it.
                         sed -i "/$2/ s/$/ $1/" tags.txt
@@ -26,12 +26,12 @@ addtag()
 }
 
 case $1 in
-        a|addtag) addtag $2 $3;;
+        a|addtag) addtag "$2" "$3";;
         l|list) cat tags.txt ;;
-        h|help) printf "usage: givetags [option] [tag] [filename] \n" \
-                printf "options: \n" \
-                printf "\t a, addtag: adds given tag to file e.g: givetag a Metal song.mp3 \n" \
-                printf "\t l, list: lists the tags in tags.txt e.g: givetag list \n" \
+        h|help) printf "usage: givetags [option] [tag] [filename] \n" 
+                printf "options: \n" 
+                printf "\t a, addtag: adds given tag to file e.g: givetag a Metal song.mp3 \n" 
+                printf "\t l, list: lists the tags in tags.txt e.g: givetag list \n" 
                 printf "\t h, help: give this help list \n";; 
         *)     ;;
                
