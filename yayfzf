@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# Simple bash script that utilizes fzf and yay to list arch packages to be installed or deleted.
+# by Emad Pourhassani emad@emadp.xyz
+
+HST=~/.cache/yayfzf/hst # yayfzf history file
+PKGS=~/.cache/yayfzf/packages # Getting packages and updating every once in a while using a cron job, speeds up the process and terminates unnecessary internet usage
+
+# If -u is given yayfzf will update list of packages
+if [ "$1" = "-l" ] ; then
+  cat $HST | less
+fi
+
+if [ "$1" = "-u" ] ; then
+  touch $PKGS
+  yay -Sl > $PKGS
+  notify-send "yayfzf" "package list updated"
+fi
+
+# If empty yayfzf will list all main repo and AUR packages to be installed.
+if [ $# -eq 0 ]; then
+  packages=$( cat $PKGS | awk '{print $2($4 =="" ? "" : " *" )}' | fzf  -m -e --preview "cat <(yay -Si {1}) <(yay -Fl {1} | awk '{print \$2}')" --layout=reverse | sed "s/ .*//g")
+  if [ "$( echo "$packages" | sed "s/ //")" = "" ]; then
+    exit;
+  else
+    yay -S $packages  && (echo "Installed $(echo $packages | tr " " ", ") on $(date | sed "s/+.*//g") " >> $HST) 
+  fi
+fi
+
+# If -r is given yayfzf will list all installed packages to be removed.
+if [ "$1" = "-r" ] ; then
+  packages=$(cat $PKGS | awk '{if ($4 != "") print $2}' | fzf -e -m --preview "cat <(yay -Si {1}) <(yay -Fl {1} | awk '{print \$2}')" --layout=reverse | sed "s/ .*//g")
+  if [ "$( echo "$packages" | sed "s/ //")" = "" ]; then
+    exit;
+  else
+    yay -R $packages && (echo "Removed $(echo $packages | tr " " ", ") on $(date | sed "s/+.*//g")"  >> $HST);
+  fi
+fi
+
+# If -rs is given yayfzf will list all packages installed by the user and their dependancies to be removed.
+
+if [ "$1" = "-rs" ]; then
+  packages=$(yay -Qqet  | fzf -e -m --preview "cat <(yay -Si {1}) <(yay -Fl {1} | awk '{print \$2}')" --layout=reverse)
+  echo $packages;
+  yay -Rs $packages && (echo "Removed $(echo $packages | tr " " ", ") with dependencies on $(date | sed "s/+.*//g") " >> "$HST");
+fi
+
+
+if [ "$1" = "-Q" ]; then
+  packages=$(yay -Q  | fzf -e -m --preview "cat <(yay -Si {1}) <(yay -Fl {1} | awk '{print \$2}')" --layout=reverse)
+  yay -Rs $packages && (echo "Removed $(echo $packages | tr " " ", ") with dependencies on $(date | sed "s/+.*//g") " >> "$HST");
+fi
