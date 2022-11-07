@@ -7,6 +7,7 @@
 
 addtag()
 {
+        filename=$(basename "$2")
         filepath=$(readlink -f "$2") # get filepath
         if grep -Fwq "$filepath" tags.txt; # check if file already has any tags
         then
@@ -16,7 +17,7 @@ addtag()
                         printf "FILE ALREADY HAS THE %s TAG\n" "$1"
                 else
                         # If file is missing the tag, add it.
-                        sed -i "/$2/ s/$/ $1/" tags.txt
+                        sed -i "/$filename/ s/$/ $1/" tags.txt
                 fi
 
         else    
