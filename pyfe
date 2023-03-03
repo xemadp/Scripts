@@ -1,0 +1,27 @@
+#!/bin/sh
+
+setupserver () {
+	python -m http.server 8000
+}
+
+printip () {
+        ip=$(ip addr | grep "inet " | sed -e "s/\/.*//g" -e "s/inet//g" | tail -n1)
+        printf "serving on $ip\n"
+
+}
+
+openip () {
+        ip=$(ip addr | grep "inet 192" | sed -e "s/\/.*//g" -e "s/inet//g" -e "s/ //g")
+        "$BROWSER" "http://$ip:8000"
+
+}
+
+case $1 in
+        ss) printip; setupserver "$1";;
+        ssw) printip; setupserver "$1" & disown; openip;;
+        *)  printf "USAGE: pyfe \n" 
+            printf "\tpyfe ss - create local server and print ip \n"
+            printf "\tpyfe ssw - create local server, print ip and open server in browser \n";;
+esac
+
+exit $?
