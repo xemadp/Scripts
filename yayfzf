@@ -6,6 +6,20 @@
 HST=~/.cache/yayfzf/hst # yayfzf history file
 PKGS=~/.cache/yayfzf/packages # Getting packages and updating every once in a while using a cron job, speeds up the process and terminates unnecessary internet usage
 
+if [ -f "$HST" ]; then
+    echo "$HST exists."
+else
+    mkdir ~/.cache/yayfzf
+    touch ~/.cache/yayfzf/hst
+fi
+
+if [ -f "$PKGS" ]; then
+    echo "$PKGS exists."
+else
+    mkdir ~/.cache/yayfzf
+    touch ~/.cache/yayfzf/packages
+fi
+
 # If -u is given yayfzf will update list of packages
 if [ "$1" = "-l" ] ; then
   cat $HST | less
