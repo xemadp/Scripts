@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Simple bash script that enables/disables keyboard backlight 
+# utilizing brightnessctl program.
+# by Emad Pourhassani emad@emadp.xyz
+
+# If empty kbl will display help
+if [ $# -eq 0 ]; then
+  printf "kbl - enables/disable keyboard backlight\n"
+  printf "\t2 - turn backlight on\n"
+  printf "\t1 - turn backlight on with medium brightness\n"
+  printf "\t0 - turn backlight off\n"
+  printf "\thelp - display help\n"
+fi
+
+if [ "$1" = "help" ]; then
+  printf "kbl - enables/disable keyboard backlight\n"
+  printf "\t2 - turn backlight on\n"
+  printf "\t1 - turn backlight on with medium brightness\n"
+  printf "\t0 - turn backlight off\n"
+  printf "\thelp - display help\n"
+fi
+
+if [ "$1" = "2" ]; then
+ 	sudo brightnessctl --device='tpacpi::kbd_backlight' set 2
+fi
+
+if [ "$1" = "1" ]; then
+ 	sudo brightnessctl --device='tpacpi::kbd_backlight' set 1
+fi
+
+
+if [ "$1" = "0" ]; then
+ 	sudo brightnessctl --device='tpacpi::kbd_backlight' set 0
+fi
